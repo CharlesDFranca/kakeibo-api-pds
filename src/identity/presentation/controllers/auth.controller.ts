@@ -34,7 +34,7 @@ export class AuthController {
         response.cookie('session', sessionId, {
             httpOnly: true,
             secure: true,
-            sameSite: 'lax',
+            sameSite: 'none',
             path: '/',
         });
     }
