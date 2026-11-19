@@ -1,0 +1,45 @@
+import type { IWalletRepository } from '@/finance/domain/repositories/wallet-repository.interface';
+import { FINANCE_TOKENS } from '@/finance/finance.tokens';
+import { IBaseUseCase } from '@/shared/app/contracts/base-usecase.contract';
+import { Inject, Injectable } from '@nestjs/common';
+import type { IWalletDeletionPolicy } from '../../../domain/services/wallet-deletion-policy.interface';
+import { WalletNotFoundError } from '../../errors/wallet-not-found.error';
+
+type DeleteWalletInput = {
+    walletId: string;
+    userId: string;
+};
+
+type DeleteWalletOutput = void;
+
+@Injectable()
+export class DeleteWalletUseCase implements IBaseUseCase<
+    DeleteWalletInput,
+    DeleteWalletOutput
+> {
+    constructor(
+        @Inject(FINANCE_TOKENS.WALLET_REPOSITORY)
+        private readonly walletRepository: IWalletRepository,
+        @Inject(FINANCE_TOKENS.WALLET_DELETION_POLICY)
+        private readonly walletDeletionPolicy: IWalletDeletionPolicy,
+    ) {}
+
+    async execute(input: DeleteWalletInput): Promise<DeleteWalletOutput> {
+        const wallet = await this.walletRepository.findUserWalletById(
+            input.userId,
+            input.walletId,
+        );
+
+        if (!wallet) throw new WalletNotFoundError();
+
+        await this.walletDeletionPolicy.ensureCanDelete(
+            input.userId,
+            input.walletId,
+        );
+
+        await this.walletRepository.deleteUserWallet(
+            input.userId,
+            input.walletId,
+        );
+    }
+}

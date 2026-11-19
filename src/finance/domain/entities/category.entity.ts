@@ -1,0 +1,65 @@
+import { BaseEntity } from '@/shared/domain/entities/base-entity.entity';
+import { Name } from '@/shared/domain/value-objects/name.vo';
+import { SystemCategoryCannotBeRenamedError } from '../errors/system-category-cannot-be-renamed.error';
+
+type CategoryProps = {
+    name: Name;
+    userId: string;
+    isSystem: boolean;
+    isActive: boolean;
+};
+
+export class Category extends BaseEntity<CategoryProps> {
+    constructor(
+        id: string,
+        props: CategoryProps,
+        createdAt: Date,
+        updatedAt: Date,
+    ) {
+        super(id, props, createdAt, updatedAt);
+    }
+
+    public get name(): Name {
+        return this.props.name;
+    }
+
+    public get userId(): string {
+        return this.props.userId;
+    }
+
+    public get isSystem(): boolean {
+        return this.props.isSystem;
+    }
+
+    public get isActive(): boolean {
+        return this.props.isActive;
+    }
+
+    public rename(name: Name) {
+        // Categorias de sistema são localizadas pelo nome e não podem ser alteradas
+        if (this.isSystem) throw new SystemCategoryCannotBeRenamedError();
+
+        if (this.name.equals(name)) return;
+
+        this.props.name = name;
+        this.touch();
+    }
+
+    public canBeRemoved(): boolean {
+        return !this.isSystem;
+    }
+
+    public deactivate(): void {
+        if (!this.isActive) return;
+
+        this.props.isActive = false;
+        this.touch();
+    }
+
+    public activate(): void {
+        if (this.isActive) return;
+
+        this.props.isActive = true;
+        this.touch();
+    }
+}

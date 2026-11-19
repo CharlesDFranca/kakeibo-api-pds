@@ -1,0 +1,38 @@
+{
+    "compilerOptions": {
+        "module": "nodenext",
+        "moduleResolution": "nodenext",
+
+        "target": "ES2023",
+
+        "rootDir": "./src",
+        "outDir": "./dist",
+
+        "paths": {
+            "@/*": ["./src/*"]
+        },
+
+        "sourceMap": true,
+        "incremental": true,
+        "tsBuildInfoFile": "./dist/.tsbuildinfo",
+
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+
+        "esModuleInterop": true,
+        "allowSyntheticDefaultImports": true,
+
+        "isolatedModules": true,
+
+        "strict": true,
+        "skipLibCheck": true,
+
+        "forceConsistentCasingInFileNames": true,
+
+        "noFallthroughCasesInSwitch": true,
+        "noUncheckedIndexedAccess": true,
+        "exactOptionalPropertyTypes": false,
+
+        "types": ["node", "jest"]
+    }
+}

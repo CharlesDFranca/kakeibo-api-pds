@@ -1,0 +1,43 @@
+import { UserEntity } from '@/identity/infra/entities/typeorm-user.entity';
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn,
+    ManyToOne,
+    PrimaryColumn,
+    Unique,
+    UpdateDateColumn,
+} from 'typeorm';
+
+@Entity('categories')
+@Unique(['userId', 'normalizedName'])
+export class CategoryEntity {
+    @PrimaryColumn()
+    id!: string;
+
+    @Column({ type: 'varchar', length: 100 })
+    name!: string;
+
+    @Column({ type: 'varchar', length: 100 })
+    normalizedName!: string;
+
+    @Column()
+    userId!: string;
+
+    @Column({ type: 'boolean' })
+    isSystem!: boolean;
+
+    @Column({ type: 'boolean', default: true })
+    isActive!: boolean;
+
+    @ManyToOne(() => UserEntity, { onDelete: 'CASCADE' })
+    @JoinColumn({ name: 'userId' })
+    user!: UserEntity;
+
+    @CreateDateColumn({ type: 'timestamptz' })
+    createdAt!: Date;
+
+    @UpdateDateColumn({ type: 'timestamptz' })
+    updatedAt!: Date;
+}

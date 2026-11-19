@@ -1,0 +1,89 @@
+import { User } from '@/identity/domain/entities/user.entity';
+import { Email } from '@/identity/domain/value-objects/email.vo';
+import { Username } from '@/identity/domain/value-objects/username.vo';
+import { IDENTITY_TOKENS } from '@/identity/identity.token';
+import { IBaseUseCase } from '@/shared/app/contracts/base-usecase.contract';
+import type { IIDGenerator } from '@/core/app/contracts/id-generator.contract';
+import type { IPasswordHasher } from '@/identity/app/contracts/password-hasher.contract';
+import { Name } from '@/shared/domain/value-objects/name.vo';
+import { EPlan } from '@/shared/plans/plan.enum';
+import { Injectable, Inject } from '@nestjs/common';
+import { EmailAlreadyExistsError } from '../../errors/email-already-exists.error';
+import { UsernameAlreadyExistsError } from '../../errors/username-already-exists.error';
+import { PasswordCannotBeEmptyError } from '../../errors/password-cannot-be-empty.error';
+import { CORE_TOKENS } from '@/core/core.tokens';
+import type { IIdentityUnitOfWork } from '../../contracts/identity-unit-of-work.contract';
+import type { IFinanceFacade } from '@/finance/api/finance-facade.api';
+import { FINANCE_TOKENS } from '@/finance/finance.tokens';
+
+type CreateUserInput = {
+    name?: string | undefined;
+    username: string;
+    email: string;
+    password: string;
+};
+type CreateUserOutput = { id: string };
+
+@Injectable()
+export class CreateUserUseCase implements IBaseUseCase<
+    CreateUserInput,
+    CreateUserOutput
+> {
+    constructor(
+        @Inject(IDENTITY_TOKENS.PASSWORD_HASHER)
+        private readonly passworder: IPasswordHasher,
+        @Inject(CORE_TOKENS.ID_GENERATOR)
+        private readonly idGenerator: IIDGenerator,
+        @Inject(IDENTITY_TOKENS.UNIT_OF_WORK)
+        private readonly identityUow: IIdentityUnitOfWork,
+        @Inject(FINANCE_TOKENS.FACADE)
+        private readonly financeFacade: IFinanceFacade,
+    ) {}
+
+    async execute(input: CreateUserInput): Promise<CreateUserOutput> {
+        const user = await this.identityUow.transaction(async () => {
+            const userRepository = this.identityUow.getUserRepository();
+
+            const email = new Email(input.email);
+            const username = new Username(input.username);
+
+            const emailAlredyUsed = await userRepository.findByEmail(email);
+
+            if (emailAlredyUsed) throw new EmailAlreadyExistsError();
+
+            const usernameAlredyUsed =
+                await userRepository.findByUsername(username);
+
+            if (usernameAlredyUsed) throw new UsernameAlreadyExistsError();
+
+            const password = input.password.trim();
+
+            if (!password.length) throw new PasswordCannotBeEmptyError();
+
+            const passwordHash = await this.passworder.hash(password);
+
+            const now = new Date();
+
+            const user = new User(
+                this.idGenerator.generate(),
+                {
+                    name: new Name(input.name?.trim() || username.value),
+                    username,
+                    email,
+                    password: passwordHash,
+                    plan: EPlan.FREE,
+                },
+                now,
+                now,
+            );
+
+            await userRepository.create(user);
+            await this.financeFacade.createSystemCategories(user.id);
+            await this.financeFacade.createBasicCategories(user.id);
+
+            return user;
+        });
+
+        return { id: user.id };
+    }
+}

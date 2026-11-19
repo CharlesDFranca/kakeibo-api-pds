@@ -1,0 +1,63 @@
+import { TransactionEntity } from '@/finance/infra/entities/typeorm-transaction.entity';
+import { TransactionType } from '../../domain/value-objects/transaction-type.vo';
+import { Transaction } from '../../domain/entities/transaction.entity';
+import { TransactionDetails } from '../../app/contracts/transaction-details.type';
+import { Money } from '@/shared/domain/value-objects/money.vo';
+
+export class TypeOrmTransactionMapper {
+    private constructor() {}
+
+    public static toDomain(raw: TransactionEntity): Transaction {
+        return new Transaction(
+            raw.id,
+            {
+                amount: Money.fromCents(raw.amount),
+                categoryId: raw.categoryId,
+                date: raw.date,
+                description: raw.description,
+                type: new TransactionType(raw.type),
+                walletId: raw.walletId,
+                direction: raw.direction ?? undefined,
+            },
+            raw.createdAt,
+            raw.updatedAt,
+        );
+    }
+
+    public static toPersistence(transaction: Transaction): TransactionEntity {
+        const transactionEntity = new TransactionEntity();
+
+        transactionEntity.id = transaction.id;
+        transactionEntity.amount = transaction.amount.toCents();
+        transactionEntity.description = transaction.description;
+        transactionEntity.date = transaction.date;
+        transactionEntity.type = transaction.type.value();
+        transactionEntity.categoryId = transaction.categoryId;
+        transactionEntity.walletId = transaction.walletId;
+        transactionEntity.direction = transaction.direction ?? null;
+        transactionEntity.createdAt = transaction.createdAt;
+        transactionEntity.updatedAt = transaction.updatedAt;
+
+        return transactionEntity;
+    }
+
+    public static toDetails(
+        transaction: TransactionEntity,
+    ): TransactionDetails {
+        return {
+            id: transaction.id,
+            amount: Money.fromCents(transaction.amount).amount,
+            description: transaction.description,
+            type: transaction.type,
+            date: transaction.date,
+            category: {
+                id: transaction.categoryId,
+                name: transaction.category.name,
+            },
+            wallet: {
+                id: transaction.walletId,
+                name: transaction.wallet.name,
+            },
+        };
+    }
+}
