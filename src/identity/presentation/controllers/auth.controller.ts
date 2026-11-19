@@ -32,9 +32,13 @@ export class AuthController {
         });
 
         response.cookie('session', sessionId, {
-            httpOnly: true,
-            sameSite: 'lax',
-        });
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none',
+    path: '/',
+});
+
+      
     }
 
     @Post('logout')

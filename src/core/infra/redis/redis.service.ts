@@ -1,3 +1,4 @@
+
 import {
     Injectable,
     Logger,
@@ -15,8 +16,12 @@ export class RedisService implements OnModuleDestroy, OnModuleInit {
         this.client = new Redis({
             host: process.env.REDIS_HOST,
             port: Number(process.env.REDIS_PORT),
-            username: process.env.REDIS_USERNAME,
-            password: process.env.REDIS_PASSWORD,
+            username: process.env.REDIS_USERNAME || undefined,
+            password: process.env.REDIS_PASSWORD || undefined,
+
+            ...(process.env.REDIS_TLS === 'true' && {
+                tls: {},
+            }),
         });
     }
 
@@ -32,8 +37,13 @@ export class RedisService implements OnModuleDestroy, OnModuleInit {
         }
     }
 
-    async set<T>(key: string, value: T, ttlSeconds?: number): Promise<void> {
+    async set<T>(
+        key: string,
+        value: T,
+        ttlSeconds?: number,
+    ): Promise<void> {
         const data = JSON.stringify(value);
+
         if (ttlSeconds) {
             await this.client.set(key, data, 'EX', ttlSeconds);
         } else {
