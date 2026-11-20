@@ -27,13 +27,8 @@ export class UserEntity {
     @Column({ type: 'enum', enum: EPlan, default: EPlan.FREE })
     plan!: EPlan;
 
-<<<<<<< HEAD
     @Column({ type: 'jsonb', default: () => "'[]'" })
     seenTutorials!: string[];
-=======
-    @Column({ type: 'boolean', default: false })
-    tutorialCompleted!: boolean;
->>>>>>> 2b80e84bd9c98cbe154a3c87146c227be8c3320f
 
     @CreateDateColumn({ type: 'timestamptz' })
     createdAt!: Date;
