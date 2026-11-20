@@ -27,6 +27,9 @@ export class UserEntity {
     @Column({ type: 'enum', enum: EPlan, default: EPlan.FREE })
     plan!: EPlan;
 
+    @Column({ type: 'jsonb', default: () => "'[]'" })
+    seenTutorials!: string[];
+
     @CreateDateColumn({ type: 'timestamptz' })
     createdAt!: Date;
 

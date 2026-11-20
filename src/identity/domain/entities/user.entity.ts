@@ -10,6 +10,8 @@ type UserProps = {
     email: Email;
     password: string;
     plan: EPlan;
+    /** Ids dos tutoriais (um por tela) que o usuário já viu. */
+    seenTutorials?: string[];
 };
 
 export class User extends BaseEntity<UserProps> {
@@ -40,6 +42,24 @@ export class User extends BaseEntity<UserProps> {
 
     public get plan(): EPlan {
         return this.props.plan;
+    }
+
+    public get seenTutorials(): string[] {
+        return [...(this.props.seenTutorials ?? [])];
+    }
+
+    public markTutorialSeen(id: string): void {
+        if (this.seenTutorials.includes(id)) return;
+
+        this.props.seenTutorials = [...this.seenTutorials, id];
+        this.touch();
+    }
+
+    public resetTutorials(): void {
+        if (this.seenTutorials.length === 0) return;
+
+        this.props.seenTutorials = [];
+        this.touch();
     }
 
     public changePlan(plan: EPlan): void {

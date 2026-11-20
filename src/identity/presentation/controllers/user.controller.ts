@@ -1,5 +1,7 @@
 import {
     ChangeUserPlanUseCase,
+    MarkTutorialSeenUseCase,
+    ResetTutorialsUseCase,
     CreateUserUseCase,
     FindUserByIdUseCase,
 } from '@/identity/app/use-cases/users';
@@ -13,8 +15,10 @@ import {
     Body,
     Get,
     Patch,
+    Delete,
 } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
+import { MarkTutorialDto } from '../dto/mark-tutorial.dto';
 import { ChangePlanDto } from '../dto/change-plan.dto';
 
 @Controller('users')
@@ -23,6 +27,8 @@ export class UsersController {
         private readonly createUserUseCase: CreateUserUseCase,
         private readonly findUserByIdUseCase: FindUserByIdUseCase,
         private readonly changeUserPlanUseCase: ChangeUserPlanUseCase,
+        private readonly markTutorialSeenUseCase: MarkTutorialSeenUseCase,
+        private readonly resetTutorialsUseCase: ResetTutorialsUseCase,
     ) {}
 
     @Public()
@@ -53,5 +59,25 @@ export class UsersController {
             userId,
             plan: body.plan,
         });
+    }
+
+    /** Registra que o usuário já viu o tutorial de uma tela (vale em qualquer navegador). */
+    @Patch('me/tutorials')
+    @HttpCode(HttpStatus.OK)
+    async markTutorialSeen(
+        @CurrentUserId() userId: string,
+        @Body() body: MarkTutorialDto,
+    ) {
+        return this.markTutorialSeenUseCase.execute({
+            userId,
+            tutorial: body.tutorial,
+        });
+    }
+
+    /** Zera os tutoriais vistos: todos voltam a aparecer como na primeira visita. */
+    @Delete('me/tutorials')
+    @HttpCode(HttpStatus.OK)
+    async resetTutorials(@CurrentUserId() userId: string) {
+        return this.resetTutorialsUseCase.execute({ userId });
     }
 }
