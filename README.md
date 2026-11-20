@@ -460,7 +460,6 @@ Atualmente existem policies relacionadas à exclusão de:
 
 ---
 
-
 ### Factory Method nas entidades
 
 A criação de `Transaction` e `GoalMovement` passa por métodos estáticos nomeados nas próprias entidades, em vez de `new` espalhado pelos casos de uso:
@@ -470,7 +469,6 @@ A criação de `Transaction` e `GoalMovement` passa por métodos estáticos nome
 
 O chamador declara a intenção; descrição padrão, tipo, sentido e regras de criação ficam na entidade (GRASP Creator). O construtor continua público só para os mappers, que reconstroem entidades do banco.
 
-
 ### State na meta
 
 O comportamento da meta (`Goal`) depende do status. Em vez de `if` por status dentro da entidade, cada status tem uma classe de estado em `planning/domain/entities/goal-state/`: `InProgressGoalState`, `CompletedGoalState`, `ExpiredGoalState` e `CancelledGoalState`. Cada uma decide, para aporte, retirada, conclusão, expiração, reativação, cancelamento e edição, se aceita, ignora ou lança o erro de domínio.
@@ -478,7 +476,6 @@ O comportamento da meta (`Goal`) depende do status. Em vez de `if` por status de
 - O banco continua guardando só o enum `EGoalStatus`; o estado é derivado dele (`goalStateFor`). Não houve mudança de schema nem de mapper.
 - Os estados não guardam dados (uma instância de cada) e acessam a meta só pelo contrato `GoalContext`, sem conhecer as props internas.
 - A API pública de `Goal` não mudou.
-
 
 ### Dependência entre contextos (DIP)
 
@@ -705,11 +702,11 @@ http://localhost:3000
 
 Durante a execução do ambiente Docker, as seguintes ferramentas podem ser utilizadas:
 
-| Ferramenta       | Endereço                     |
-|------------------|------------------------------|
-| API              | `http://localhost:3000`      |
-| Adminer          | `http://localhost:8080`      |
-| Redis Commander  | `http://localhost:8081`      |
+| Ferramenta      | Endereço                |
+| --------------- | ----------------------- |
+| API             | `http://localhost:3000` |
+| Adminer         | `http://localhost:8080` |
+| Redis Commander | `http://localhost:8081` |
 
 ---
 
@@ -750,10 +747,10 @@ O projeto está em evolução contínua. As próximas etapas estão concentradas
 
 Seção 6.3.3 do documento. Os contextos se comunicam por um barramento interno (`IEventBus`, implementado sobre o `EventEmitter` do NestJS em `core/infra/events`).
 
-| Evento | Publicado por | Quando |
-|---|---|---|
-| `finance.transaction.created` (`TransactionCreatedEvent`) | `RegisterTransactionUseCase` | Depois do commit de uma receita ou despesa |
-| `planning.goal.reached` (`GoalReachedEvent`) | `DepositGoalUseCase` | Depois do commit de um aporte que completa a meta |
+| Evento                                                    | Publicado por                | Quando                                            |
+| --------------------------------------------------------- | ---------------------------- | ------------------------------------------------- |
+| `finance.transaction.created` (`TransactionCreatedEvent`) | `RegisterTransactionUseCase` | Depois do commit de uma receita ou despesa        |
+| `planning.goal.reached` (`GoalReachedEvent`)              | `DepositGoalUseCase`         | Depois do commit de um aporte que completa a meta |
 
 Consumidor existente: `notifications/app/handlers/goal-reached.handler.ts` (gera a notificação de meta atingida; consulta em `GET /notifications`, plano Pro).
 
@@ -767,33 +764,32 @@ Veja [docs/decisoes-e-divergencias-do-documento.md](docs/decisoes-e-divergencias
 
 O plano fica no usuário (`GET /users/me` devolve `plan` e `features`) e as restrições seguem a Tabela 28 do documento:
 
-| Funcionalidade | Free | Plus | Pro |
-|---|---|---|---|
-| Carteiras, categorias, receitas/despesas, histórico e resumo financeiro | ✓ | ✓ | ✓ |
-| Transferências e estornos (`/transfers`) | — | ✓ | ✓ |
-| Análise por categoria (`expensesByCategory` do `/finance/dashboard`) | — | ✓ | ✓ |
-| Metas (`/goals`, `/planning/dashboard`) | — | — | ✓ |
-| Notificações | — | — | ✓ |
+| Funcionalidade                                                          | Free | Plus | Pro |
+| ----------------------------------------------------------------------- | ---- | ---- | --- |
+| Carteiras, categorias, receitas/despesas, histórico e resumo financeiro | ✓    | ✓    | ✓   |
+| Transferências e estornos (`/transfers`)                                | —    | ✓    | ✓   |
+| Análise por categoria (`expensesByCategory` do `/finance/dashboard`)    | —    | ✓    | ✓   |
+| Metas (`/goals`, `/planning/dashboard`)                                 | —    | —    | ✓   |
+| Notificações                                                            | —    | —    | ✓   |
 
 - O mapa de funcionalidades por plano está em `src/shared/plans/plan-features.ts`.
 - As rotas restritas usam `@RequiresFeature(EFeature.X)` e respondem **403** com o código `FEATURE_NOT_AVAILABLE_IN_PLAN`.
 - `PATCH /users/me/plan` troca o plano (provisório, sem cobrança). Rebaixar não apaga dados, só bloqueia as rotas.
-<<<<<<< HEAD
 - Tutoriais do front (um por tela): `GET /users/me` devolve `seenTutorials` (ids já vistos: `dashboard`, `wallets`, `transactions`, `transfers`, `goals`, `goal`, `notifications`, `plans`, `profile`). `PATCH /users/me/tutorials` com `{ "tutorial": "<id>" }` marca um como visto (idempotente) e `DELETE /users/me/tutorials` zera todos. Vale em qualquer navegador. A coluna `seenTutorials` (jsonb, padrão `[]`) é criada pelo `synchronize`.
-=======
-- `PATCH /users/me/tutorial` registra que o usuário já passou pelo tutorial do front (`tutorialCompleted`, devolvido em `GET /users/me`). É idempotente e vale em qualquer navegador. A coluna `tutorialCompleted` (boolean, padrão `false`) é criada pelo `synchronize`.
->>>>>>> 2b80e84bd9c98cbe154a3c87146c227be8c3320f
+
 # kakeibo-api-pds
+
 # kakeibo-api-pds
+
 # kakeibo-api-pds
 
 ## Cookie de sessão (SameSite)
 
 O login grava o cookie `session` (`httpOnly`). Os atributos vêm do ambiente:
 
-| Variável | Padrão | Uso |
-|---|---|---|
-| `COOKIE_SAMESITE` | `lax` | `none` só se o front chamar a API de outro domínio (sujeito ao bloqueio de cookie de terceiros) |
-| `COOKIE_SECURE` | `true` | `false` apenas em `http://localhost` |
+| Variável          | Padrão | Uso                                                                                             |
+| ----------------- | ------ | ----------------------------------------------------------------------------------------------- |
+| `COOKIE_SAMESITE` | `lax`  | `none` só se o front chamar a API de outro domínio (sujeito ao bloqueio de cookie de terceiros) |
+| `COOKIE_SECURE`   | `true` | `false` apenas em `http://localhost`                                                            |
 
 O front em produção chama a API pelo proxy da Vercel (`/api/*`), então o cookie é first-party e `lax` funciona em todos os navegadores. Veja o README do front.

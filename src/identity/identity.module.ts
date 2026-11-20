@@ -10,12 +10,8 @@ import { LogoutUseCase } from './app/use-cases/auth/logout.usecase';
 import { CreateUserUseCase } from './app/use-cases/users/create-user.usecase';
 import { FindUserByIdUseCase } from './app/use-cases/users/find-user-by-id.usecase';
 import { ChangeUserPlanUseCase } from './app/use-cases/users/change-user-plan.usecase';
-<<<<<<< HEAD
 import { MarkTutorialSeenUseCase } from './app/use-cases/users/mark-tutorial-seen.usecase';
 import { ResetTutorialsUseCase } from './app/use-cases/users/reset-tutorials.usecase';
-=======
-import { CompleteTutorialUseCase } from './app/use-cases/users/complete-tutorial.usecase';
->>>>>>> 2b80e84bd9c98cbe154a3c87146c227be8c3320f
 
 import { TypeOrmUserRepository } from './infra/repositories/typeorm-user.repository';
 import { RedisSessionRepository } from './infra/repositories/redis-session.repository';
@@ -43,12 +39,8 @@ import { FinanceModule } from '@/finance/finance.module';
         CreateUserUseCase,
         FindUserByIdUseCase,
         ChangeUserPlanUseCase,
-<<<<<<< HEAD
         MarkTutorialSeenUseCase,
         ResetTutorialsUseCase,
-=======
-        CompleteTutorialUseCase,
->>>>>>> 2b80e84bd9c98cbe154a3c87146c227be8c3320f
 
         AuthContextService,
 

@@ -17,11 +17,7 @@ type FindUserByIdOutput = {
     username: string;
     plan: EPlan;
     features: EFeature[];
-<<<<<<< HEAD
     seenTutorials: string[];
-=======
-    tutorialCompleted: boolean;
->>>>>>> 2b80e84bd9c98cbe154a3c87146c227be8c3320f
 };
 
 @Injectable()
@@ -45,11 +41,7 @@ export class FindUserByIdUseCase implements IBaseUseCase<
             username: user.username.value,
             plan: user.plan,
             features: featuresOf(user.plan),
-<<<<<<< HEAD
             seenTutorials: user.seenTutorials,
-=======
-            tutorialCompleted: user.tutorialCompleted,
->>>>>>> 2b80e84bd9c98cbe154a3c87146c227be8c3320f
         };
     }
 }
