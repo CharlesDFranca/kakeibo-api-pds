@@ -10,8 +10,13 @@ type UserProps = {
     email: Email;
     password: string;
     plan: EPlan;
+<<<<<<< HEAD
     /** Ids dos tutoriais (um por tela) que o usuário já viu. */
     seenTutorials?: string[];
+=======
+    /** Se o usuário já viu (ou dispensou) o tutorial de boas-vindas. */
+    tutorialCompleted?: boolean;
+>>>>>>> 2b80e84bd9c98cbe154a3c87146c227be8c3320f
 };
 
 export class User extends BaseEntity<UserProps> {
@@ -44,6 +49,7 @@ export class User extends BaseEntity<UserProps> {
         return this.props.plan;
     }
 
+<<<<<<< HEAD
     public get seenTutorials(): string[] {
         return [...(this.props.seenTutorials ?? [])];
     }
@@ -59,6 +65,16 @@ export class User extends BaseEntity<UserProps> {
         if (this.seenTutorials.length === 0) return;
 
         this.props.seenTutorials = [];
+=======
+    public get tutorialCompleted(): boolean {
+        return this.props.tutorialCompleted ?? false;
+    }
+
+    public completeTutorial(): void {
+        if (this.tutorialCompleted) return;
+
+        this.props.tutorialCompleted = true;
+>>>>>>> 2b80e84bd9c98cbe154a3c87146c227be8c3320f
         this.touch();
     }
 

@@ -1,7 +1,11 @@
 import {
     ChangeUserPlanUseCase,
+<<<<<<< HEAD
     MarkTutorialSeenUseCase,
     ResetTutorialsUseCase,
+=======
+    CompleteTutorialUseCase,
+>>>>>>> 2b80e84bd9c98cbe154a3c87146c227be8c3320f
     CreateUserUseCase,
     FindUserByIdUseCase,
 } from '@/identity/app/use-cases/users';
@@ -27,8 +31,12 @@ export class UsersController {
         private readonly createUserUseCase: CreateUserUseCase,
         private readonly findUserByIdUseCase: FindUserByIdUseCase,
         private readonly changeUserPlanUseCase: ChangeUserPlanUseCase,
+<<<<<<< HEAD
         private readonly markTutorialSeenUseCase: MarkTutorialSeenUseCase,
         private readonly resetTutorialsUseCase: ResetTutorialsUseCase,
+=======
+        private readonly completeTutorialUseCase: CompleteTutorialUseCase,
+>>>>>>> 2b80e84bd9c98cbe154a3c87146c227be8c3320f
     ) {}
 
     @Public()
@@ -61,6 +69,7 @@ export class UsersController {
         });
     }
 
+<<<<<<< HEAD
     /** Registra que o usuário já viu o tutorial de uma tela (vale em qualquer navegador). */
     @Patch('me/tutorials')
     @HttpCode(HttpStatus.OK)
@@ -79,5 +88,12 @@ export class UsersController {
     @HttpCode(HttpStatus.OK)
     async resetTutorials(@CurrentUserId() userId: string) {
         return this.resetTutorialsUseCase.execute({ userId });
+=======
+    /** Registra que o usuário já passou pelo tutorial (vale em qualquer navegador). */
+    @Patch('me/tutorial')
+    @HttpCode(HttpStatus.OK)
+    async completeTutorial(@CurrentUserId() userId: string) {
+        return this.completeTutorialUseCase.execute({ userId });
+>>>>>>> 2b80e84bd9c98cbe154a3c87146c227be8c3320f
     }
 }

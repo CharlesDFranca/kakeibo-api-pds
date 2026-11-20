@@ -778,7 +778,11 @@ O plano fica no usuário (`GET /users/me` devolve `plan` e `features`) e as rest
 - O mapa de funcionalidades por plano está em `src/shared/plans/plan-features.ts`.
 - As rotas restritas usam `@RequiresFeature(EFeature.X)` e respondem **403** com o código `FEATURE_NOT_AVAILABLE_IN_PLAN`.
 - `PATCH /users/me/plan` troca o plano (provisório, sem cobrança). Rebaixar não apaga dados, só bloqueia as rotas.
+<<<<<<< HEAD
 - Tutoriais do front (um por tela): `GET /users/me` devolve `seenTutorials` (ids já vistos: `dashboard`, `wallets`, `transactions`, `transfers`, `goals`, `goal`, `notifications`, `plans`, `profile`). `PATCH /users/me/tutorials` com `{ "tutorial": "<id>" }` marca um como visto (idempotente) e `DELETE /users/me/tutorials` zera todos. Vale em qualquer navegador. A coluna `seenTutorials` (jsonb, padrão `[]`) é criada pelo `synchronize`.
+=======
+- `PATCH /users/me/tutorial` registra que o usuário já passou pelo tutorial do front (`tutorialCompleted`, devolvido em `GET /users/me`). É idempotente e vale em qualquer navegador. A coluna `tutorialCompleted` (boolean, padrão `false`) é criada pelo `synchronize`.
+>>>>>>> 2b80e84bd9c98cbe154a3c87146c227be8c3320f
 # kakeibo-api-pds
 # kakeibo-api-pds
 # kakeibo-api-pds
