@@ -1,5 +1,6 @@
 import {
     ChangeUserPlanUseCase,
+    CompleteTutorialUseCase,
     CreateUserUseCase,
     FindUserByIdUseCase,
 } from '@/identity/app/use-cases/users';
@@ -23,6 +24,7 @@ export class UsersController {
         private readonly createUserUseCase: CreateUserUseCase,
         private readonly findUserByIdUseCase: FindUserByIdUseCase,
         private readonly changeUserPlanUseCase: ChangeUserPlanUseCase,
+        private readonly completeTutorialUseCase: CompleteTutorialUseCase,
     ) {}
 
     @Public()
@@ -53,5 +55,12 @@ export class UsersController {
             userId,
             plan: body.plan,
         });
+    }
+
+    /** Registra que o usuário já passou pelo tutorial (vale em qualquer navegador). */
+    @Patch('me/tutorial')
+    @HttpCode(HttpStatus.OK)
+    async completeTutorial(@CurrentUserId() userId: string) {
+        return this.completeTutorialUseCase.execute({ userId });
     }
 }

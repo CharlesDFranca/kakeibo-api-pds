@@ -10,6 +10,8 @@ type UserProps = {
     email: Email;
     password: string;
     plan: EPlan;
+    /** Se o usuário já viu (ou dispensou) o tutorial de boas-vindas. */
+    tutorialCompleted?: boolean;
 };
 
 export class User extends BaseEntity<UserProps> {
@@ -40,6 +42,17 @@ export class User extends BaseEntity<UserProps> {
 
     public get plan(): EPlan {
         return this.props.plan;
+    }
+
+    public get tutorialCompleted(): boolean {
+        return this.props.tutorialCompleted ?? false;
+    }
+
+    public completeTutorial(): void {
+        if (this.tutorialCompleted) return;
+
+        this.props.tutorialCompleted = true;
+        this.touch();
     }
 
     public changePlan(plan: EPlan): void {

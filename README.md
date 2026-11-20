@@ -778,6 +778,18 @@ O plano fica no usuário (`GET /users/me` devolve `plan` e `features`) e as rest
 - O mapa de funcionalidades por plano está em `src/shared/plans/plan-features.ts`.
 - As rotas restritas usam `@RequiresFeature(EFeature.X)` e respondem **403** com o código `FEATURE_NOT_AVAILABLE_IN_PLAN`.
 - `PATCH /users/me/plan` troca o plano (provisório, sem cobrança). Rebaixar não apaga dados, só bloqueia as rotas.
+- `PATCH /users/me/tutorial` registra que o usuário já passou pelo tutorial do front (`tutorialCompleted`, devolvido em `GET /users/me`). É idempotente e vale em qualquer navegador. A coluna `tutorialCompleted` (boolean, padrão `false`) é criada pelo `synchronize`.
 # kakeibo-api-pds
 # kakeibo-api-pds
 # kakeibo-api-pds
+
+## Cookie de sessão (SameSite)
+
+O login grava o cookie `session` (`httpOnly`). Os atributos vêm do ambiente:
+
+| Variável | Padrão | Uso |
+|---|---|---|
+| `COOKIE_SAMESITE` | `lax` | `none` só se o front chamar a API de outro domínio (sujeito ao bloqueio de cookie de terceiros) |
+| `COOKIE_SECURE` | `true` | `false` apenas em `http://localhost` |
+
+O front em produção chama a API pelo proxy da Vercel (`/api/*`), então o cookie é first-party e `lax` funciona em todos os navegadores. Veja o README do front.

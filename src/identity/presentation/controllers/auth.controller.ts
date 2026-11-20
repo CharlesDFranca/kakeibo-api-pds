@@ -12,6 +12,27 @@ import {
 import type { Response } from 'express';
 import { LoginDto } from '../dto/login.dto';
 
+/**
+ * Atributos do cookie de sessão.
+ *
+ * O front (Vercel) chama a API por um proxy no próprio domínio (`/api/*`), então o
+ * cookie é "first-party" e `SameSite=Lax` funciona em Chrome, Safari e Firefox.
+ * `COOKIE_SAMESITE=none` só é necessário se o front chamar a API direto, de outro
+ * domínio, e nesse caso Safari/Chrome podem bloquear o cookie como de terceiros.
+ */
+const sessionCookieOptions = () => {
+    const configured = (process.env.COOKIE_SAMESITE ?? 'lax').toLowerCase();
+    const sameSite = (['lax', 'strict', 'none'] as const).find((v) => v === configured) ?? 'lax';
+
+    return {
+        httpOnly: true,
+        // SameSite=None exige Secure; em localhost (http) use COOKIE_SECURE=false
+        secure: sameSite === 'none' || process.env.COOKIE_SECURE !== 'false',
+        sameSite,
+        path: '/',
+    } as const;
+};
+
 @Controller('auth')
 export class AuthController {
     constructor(
@@ -31,12 +52,7 @@ export class AuthController {
             password: body.password,
         });
 
-        response.cookie('session', sessionId, {
-            httpOnly: true,
-            secure: true,
-            sameSite: 'none',
-            path: '/',
-        });
+        response.cookie('session', sessionId, sessionCookieOptions());
     }
 
     @Post('logout')
@@ -47,6 +63,7 @@ export class AuthController {
     ) {
         await this.logoutUseCase.execute({ sessionId });
 
-        response.clearCookie('session');
+        // os atributos precisam ser os mesmos do login, senão o navegador pode ignorar a remoção
+        response.clearCookie('session', sessionCookieOptions());
     }
 }

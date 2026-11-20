@@ -10,6 +10,7 @@ import { LogoutUseCase } from './app/use-cases/auth/logout.usecase';
 import { CreateUserUseCase } from './app/use-cases/users/create-user.usecase';
 import { FindUserByIdUseCase } from './app/use-cases/users/find-user-by-id.usecase';
 import { ChangeUserPlanUseCase } from './app/use-cases/users/change-user-plan.usecase';
+import { CompleteTutorialUseCase } from './app/use-cases/users/complete-tutorial.usecase';
 
 import { TypeOrmUserRepository } from './infra/repositories/typeorm-user.repository';
 import { RedisSessionRepository } from './infra/repositories/redis-session.repository';
@@ -37,6 +38,7 @@ import { FinanceModule } from '@/finance/finance.module';
         CreateUserUseCase,
         FindUserByIdUseCase,
         ChangeUserPlanUseCase,
+        CompleteTutorialUseCase,
 
         AuthContextService,
 

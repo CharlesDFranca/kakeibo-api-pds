@@ -16,6 +16,7 @@ export class TypeormUserMapper {
                 username: new Username(raw.username),
                 password: raw.password,
                 plan: raw.plan,
+                tutorialCompleted: raw.tutorialCompleted,
             },
             raw.createdAt,
             raw.updatedAt,
@@ -31,6 +32,7 @@ export class TypeormUserMapper {
         entity.email = user.email.value;
         entity.password = user.password;
         entity.plan = user.plan;
+        entity.tutorialCompleted = user.tutorialCompleted;
 
         return entity;
     }
